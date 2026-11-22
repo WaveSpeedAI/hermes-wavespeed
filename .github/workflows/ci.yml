@@ -1,0 +1,30 @@
+name: Tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: plugin
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: NousResearch/hermes-agent
+          ref: caafe5389ae585ef77387a962aee05b1bcf17029 # v0.23.3
+          path: hermes-agent
+      - uses: astral-sh/setup-uv@e92bafb6253dcd438e0484186d7669ea7a8ca1cc # v6.4.3
+      - name: Install Hermes and pytest
+        run: |
+          uv venv --python 3.14
+          # Run inside the checkout so Hermes' own [tool.uv] dependency overrides apply.
+          (cd hermes-agent && uv pip install --python "$GITHUB_WORKSPACE/.venv/bin/python" -e . pytest)
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+          echo "HERMES_HOME=$RUNNER_TEMP/hermes-home" >> "$GITHUB_ENV"
+      - run: pytest -q tests
+        working-directory: plugin
+      - name: Validate the plugin
+        run: hermes plugins validate plugin

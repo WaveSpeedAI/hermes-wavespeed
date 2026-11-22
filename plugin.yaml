@@ -1,0 +1,23 @@
+name: hermes-wavespeed
+version: 0.1.0
+description: "WaveSpeedAI image and video generation backends (image_gen.provider / video_gen.provider: wavespeed). Each generation is billed to the WaveSpeedAI account."
+author: WaveSpeedAI
+kind: backend
+manifest_version: 2
+license: MIT
+homepage: https://github.com/WaveSpeedAI/hermes-wavespeed
+requires_hermes: ">=0.23.0"
+requires_env:
+  - name: WAVESPEED_API_KEY
+    description: "WaveSpeedAI API key"
+    url: "https://wavespeed.ai/accesskey"
+    secret: true
+config_schema:
+  image_model:
+    type: str
+    default: bytedance/seedream-v5.0-pro
+    description: "WaveSpeedAI model id used for images when image_gen.model is not set."
+  video_model:
+    type: str
+    default: google/veo3.1-fast/text-to-video
+    description: "WaveSpeedAI model id used for videos when video_gen.model is not set."
